@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2026-02-23T14:44:20.867801",
+    "action_type": "email_detected",
+    "actor": "gmail_watcher",
+    "file": "EMAIL_19c89e12f02503f1.md",
+    "details": {
+      "from": "Mahira Khan <mairanoor412@gmail.com>",
+      "subject": "Urgent"
+    }
+  }
+]

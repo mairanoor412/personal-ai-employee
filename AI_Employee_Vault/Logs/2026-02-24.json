@@ -1,0 +1,95 @@
+[
+  {
+    "timestamp": "2026-02-24T17:08:39.844844",
+    "action_type": "linkedin_linkedin_notification",
+    "actor": "linkedin_watcher",
+    "details": {
+      "type": "linkedin_notification",
+      "content": "Unread notification.\n\nMaira Naeem viewed your profile. See all views.\n\n1m",
+      "notif_id": "linkedin_notif_-6585771938374960135_20260224"
+    }
+  },
+  {
+    "timestamp": "2026-02-24T17:13:57.299946",
+    "action_type": "linkedin_linkedin_notification",
+    "actor": "linkedin_watcher",
+    "details": {
+      "type": "linkedin_notification",
+      "content": "Unread notification.\n\nMaira Naeem viewed your profile. See all views.\n\n6m",
+      "notif_id": "linkedin_notif_-5639658974074638063_20260224"
+    }
+  },
+  {
+    "timestamp": "2026-02-24T17:19:28.279156",
+    "action_type": "linkedin_linkedin_notification",
+    "actor": "linkedin_watcher",
+    "details": {
+      "type": "linkedin_notification",
+      "content": "Unread notification.\n\nMaira Naeem viewed your profile. See all views.\n\n12m",
+      "notif_id": "linkedin_notif_2413405263666741231_20260224"
+    }
+  },
+  {
+    "timestamp": "2026-02-24T17:23:11.784710",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:27:41.277035",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:30:57.382273",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:34:02.930167",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:37:50.478882",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:41:01.564887",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:45:53.119641",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:49:32.200123",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-24T17:55:21.231571",
+    "action_type": "linkedin_post",
+    "actor": "linkedin_poster",
+    "file": "LINKEDIN_POST_ai_employee_test_20260224.md",
+    "result": "failed"
+  }
+]

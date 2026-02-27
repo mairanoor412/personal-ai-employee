@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Credentials - NEVER commit these
+credentials.json
+token.json
+.env
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Obsidian internal
+AI_Employee_Vault/.obsidian/
+
+# Browser sessions - NEVER commit these
+whatsapp_session/
+linkedin_session/
+facebook_session/
+instagram_session/
+twitter_session/
+
+# Debug screenshots
+debug_*.png
+
+# Logs (optional - uncomment if you want to track logs in git)
+# AI_Employee_Vault/Logs/*.json
+
+

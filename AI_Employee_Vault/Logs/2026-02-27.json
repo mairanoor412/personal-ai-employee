@@ -1,0 +1,100 @@
+[
+  {
+    "timestamp": "2026-02-27T09:42:16.917167",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_test_01.md",
+    "contact": "1",
+    "result": "failed"
+  },
+  {
+    "timestamp": "2026-02-27T09:45:01.317358",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_test_01.md",
+    "contact": "Mahira Khan",
+    "result": "sent"
+  },
+  {
+    "timestamp": "2026-02-27T10:02:47.495235",
+    "action_type": "whatsapp_detected",
+    "actor": "whatsapp_watcher",
+    "from": "1",
+    "keywords": []
+  },
+  {
+    "timestamp": "2026-02-27T10:08:12.636727",
+    "action_type": "whatsapp_detected",
+    "actor": "whatsapp_watcher",
+    "from": "Unknown",
+    "keywords": []
+  },
+  {
+    "timestamp": "2026-02-27T10:09:31.997725",
+    "action_type": "whatsapp_detected",
+    "actor": "whatsapp_watcher",
+    "from": "Unknown",
+    "keywords": []
+  },
+  {
+    "timestamp": "2026-02-27T10:16:56.025698",
+    "action_type": "whatsapp_detected",
+    "actor": "whatsapp_watcher",
+    "from": "Unknown",
+    "keywords": []
+  },
+  {
+    "timestamp": "2026-02-27T10:21:01.071727",
+    "action_type": "whatsapp_detected",
+    "actor": "whatsapp_watcher",
+    "from": "Mahira Khan",
+    "keywords": []
+  },
+  {
+    "timestamp": "2026-02-27T10:39:05.938401",
+    "action_type": "whatsapp_detected",
+    "actor": "whatsapp_watcher",
+    "from": "Mahira Khan",
+    "keywords": []
+  },
+  {
+    "timestamp": "2026-02-27T10:50:46.002032",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_Mahira_Khan.md",
+    "contact": "Mahira Khan",
+    "result": "sent"
+  },
+  {
+    "timestamp": "2026-02-27T11:15:48.394977",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_Mahira_Khan_2.md",
+    "contact": "Mahira Khan",
+    "result": "sent"
+  },
+  {
+    "timestamp": "2026-02-27T11:23:49.758880",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_Mahira_Khan_3.md",
+    "contact": "Mahira Khan",
+    "result": "sent"
+  },
+  {
+    "timestamp": "2026-02-27T11:33:59.992550",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_Mahira_Khan_4.md",
+    "contact": "Mahira Khan",
+    "result": "sent"
+  },
+  {
+    "timestamp": "2026-02-27T11:41:21.666086",
+    "action_type": "whatsapp_reply",
+    "actor": "whatsapp_reply",
+    "file": "WHATSAPP_REPLY_Mahira_Khan_5.md",
+    "contact": "Mahira Khan",
+    "result": "sent"
+  }
+]

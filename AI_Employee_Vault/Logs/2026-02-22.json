@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2026-02-22T12:56:23.312222",
+    "action_type": "file_detected",
+    "actor": "file_watcher",
+    "file": "test_invoice.txt",
+    "details": {
+      "size": 46,
+      "type": ".txt"
+    }
+  }
+]
