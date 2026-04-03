@@ -59,35 +59,109 @@ class FacebookPoster:
                 pass
             time.sleep(5)
 
+            # ── STEP 1.5: Close any blocking dialogs (notifications, review audience, etc) ──
+            for _ in range(5):
+                try:
+                    dialogs = page.locator('[role="dialog"]')
+                    if not dialogs.first.is_visible(timeout=2000):
+                        break
+                    dialog_text = dialogs.first.inner_text()[:300].lower()
+
+                    # "Review audience" dialog — click Continue
+                    if "review audience" in dialog_text or "continue" in dialog_text:
+                        logger.info("  Found 'Review audience' dialog, clicking Continue...")
+                        try:
+                            cont_btn = page.get_by_role("button", name="Continue", exact=True)
+                            cont_btn.click(timeout=5000)
+                        except Exception:
+                            page.get_by_text("Continue", exact=True).click(timeout=5000)
+                        time.sleep(3)
+                        continue
+
+                    # Notifications dialog — press Escape
+                    if "notification" in dialog_text or "push" in dialog_text or "turn on" in dialog_text:
+                        logger.info("  Closing notifications dialog...")
+                        page.keyboard.press("Escape")
+                        time.sleep(2)
+                        continue
+
+                    # Any other unknown dialog — press Escape
+                    if "what's on your mind" not in dialog_text and "create post" not in dialog_text:
+                        logger.info(f"  Unknown dialog, pressing Escape: {dialog_text[:80]}")
+                        page.keyboard.press("Escape")
+                        time.sleep(2)
+                        continue
+
+                    break
+                except Exception:
+                    break
+
             # ── STEP 2: Click "What's on your mind?" to open composer ──
             logger.info("Step 2: Opening post composer...")
-            composer_opened = False
+            composer_ready = False
 
-            # Try clicking the "What's on your mind" area
-            try:
-                el = page.get_by_text("What's on your mind", exact=False).first
-                box = el.bounding_box()
-                if box:
-                    page.mouse.click(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2)
-                    logger.info("  Clicked 'What's on your mind' via bounding box")
-                    composer_opened = True
-            except Exception as e:
-                logger.info(f"  Bounding box click failed: {e}")
+            for attempt in range(3):
+                logger.info(f"  Attempt {attempt + 1} to open composer...")
 
-            if not composer_opened:
+                # Click "What's on your mind"
                 try:
-                    page.locator('[aria-label="Create a post"]').first.click(timeout=5000)
-                    logger.info("  Clicked via aria-label")
-                    composer_opened = True
-                except Exception:
-                    pass
+                    el = page.get_by_text("What's on your mind", exact=False).first
+                    box = el.bounding_box()
+                    if box:
+                        page.mouse.click(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2)
+                        logger.info("  Clicked 'What's on your mind' via bounding box")
+                except Exception as e:
+                    logger.info(f"  Bounding box click failed: {e}")
 
-            if not composer_opened:
+                time.sleep(4)
+
+                # Check if the correct dialog opened (should have "Create post" or post-related content)
+                page_state = page.evaluate("""
+                    () => {
+                        const dialogs = document.querySelectorAll('[role="dialog"]');
+                        const results = [];
+                        for (const d of dialogs) {
+                            const text = d.textContent?.substring(0, 300) || '';
+                            const hasPostBtn = !!d.querySelector('[aria-label="Post"]') ||
+                                               text.includes('Post') || text.includes('Create post');
+                            const hasTextbox = !!d.querySelector('[role="textbox"]');
+                            results.push({
+                                text: text.substring(0, 150),
+                                hasPostBtn,
+                                hasTextbox,
+                                isNotification: text.includes('Notification') || text.includes('push') || text.includes('Turn on')
+                            });
+                        }
+                        return { dialogs: results, dialogCount: dialogs.length };
+                    }
+                """)
+                logger.info(f"  Dialogs found: {page_state.get('dialogCount')}")
+
+                # Close notification dialogs if any
+                for d in page_state.get("dialogs", []):
+                    if d.get("isNotification"):
+                        logger.info("  Found notification dialog, pressing Escape...")
+                        page.keyboard.press("Escape")
+                        time.sleep(2)
+                        continue
+
+                    if d.get("hasTextbox") and not d.get("isNotification"):
+                        logger.info("  Post composer dialog found!")
+                        composer_ready = True
+                        break
+
+                if composer_ready:
+                    break
+
+                logger.info("  Composer not ready, retrying...")
+                time.sleep(2)
+
+            if not composer_ready:
                 logger.error("  Could not open post composer!")
                 page.screenshot(path="debug_facebook_step2.png")
                 return False
 
-            time.sleep(4)
+            time.sleep(2)
 
             # ── STEP 3: Find editor and type content ──
             logger.info("Step 3: Typing post content...")
@@ -118,33 +192,110 @@ class FacebookPoster:
             page.keyboard.type(content, delay=15)
             time.sleep(3)
             logger.info("  Content typed successfully")
+            page.screenshot(path="debug_facebook_after_type.png")
 
             # ── STEP 4: Click Post button ──
             logger.info("Step 4: Clicking Post button...")
             post_clicked = False
 
+            # Log all buttons in the POST composer dialog (not notification dialog)
             try:
-                post_btn = page.get_by_role("button", name="Post", exact=True)
-                if post_btn.is_visible(timeout=5000) and not post_btn.is_disabled():
-                    post_btn.click(timeout=5000)
-                    logger.info("  Clicked Post button via get_by_role")
-                    post_clicked = True
-            except Exception as e:
-                logger.info(f"  get_by_role failed: {e}")
+                buttons_info = page.evaluate("""
+                    () => {
+                        // Find the dialog that has a textbox (post composer, not notifications)
+                        const dialogs = document.querySelectorAll('[role="dialog"]');
+                        let container = document;
+                        for (const d of dialogs) {
+                            if (d.querySelector('[role="textbox"]') && !d.textContent.includes('Notification')) {
+                                container = d;
+                                break;
+                            }
+                        }
+                        const buttons = container.querySelectorAll('button, [role="button"]');
+                        return Array.from(buttons).map(b => ({
+                            text: b.textContent?.trim()?.substring(0, 50),
+                            ariaLabel: b.getAttribute('aria-label'),
+                            disabled: b.disabled || b.getAttribute('aria-disabled') === 'true',
+                            tag: b.tagName
+                        })).filter(b => b.text);
+                    }
+                """)
+                logger.info(f"  Buttons found: {json.dumps(buttons_info[:15])}")
+            except Exception:
+                pass
 
-            if not post_clicked:
-                try:
-                    post_el = page.get_by_text("Post", exact=True).last
-                    box = post_el.bounding_box()
+            # Strategy 1: get_by_role inside dialog
+            try:
+                post_btn = page.locator('[role="dialog"]').get_by_role("button", name="Post", exact=True)
+                if post_btn.is_visible(timeout=3000):
+                    box = post_btn.bounding_box()
                     if box:
                         page.mouse.click(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2)
-                        logger.info("  Clicked Post via bounding box")
+                        logger.info("  Clicked Post inside dialog via bounding box")
                         post_clicked = True
+            except Exception as e:
+                logger.info(f"  Dialog Post failed: {e}")
+
+            # Strategy 2: get_by_role on whole page
+            if not post_clicked:
+                try:
+                    post_btn = page.get_by_role("button", name="Post", exact=True)
+                    if post_btn.is_visible(timeout=3000):
+                        box = post_btn.bounding_box()
+                        if box:
+                            page.mouse.click(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2)
+                            logger.info("  Clicked Post via page-level bounding box")
+                            post_clicked = True
                 except Exception as e:
-                    logger.info(f"  Bounding box failed: {e}")
+                    logger.info(f"  Page Post failed: {e}")
+
+            # Strategy 3: Find by aria-label
+            if not post_clicked:
+                try:
+                    post_btn = page.locator('[aria-label="Post"]').first
+                    if post_btn.is_visible(timeout=3000):
+                        post_btn.click(timeout=5000)
+                        logger.info("  Clicked Post via aria-label")
+                        post_clicked = True
+                except Exception:
+                    pass
+
+            # Strategy 4: JS click on button with "Post" text
+            if not post_clicked:
+                try:
+                    clicked = page.evaluate("""
+                        () => {
+                            const dialog = document.querySelector('[role="dialog"]');
+                            const container = dialog || document;
+                            const buttons = container.querySelectorAll('button, [role="button"]');
+                            for (const btn of buttons) {
+                                const text = btn.textContent?.trim();
+                                if (text === 'Post' && !btn.disabled) {
+                                    btn.click();
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    """)
+                    if clicked:
+                        logger.info("  Clicked Post via JS")
+                        post_clicked = True
+                except Exception:
+                    pass
 
             if post_clicked:
-                time.sleep(8)
+                time.sleep(10)
+                # Verify: check if dialog closed (means post was submitted)
+                try:
+                    dialog_visible = page.locator('[role="dialog"]').is_visible(timeout=3000)
+                    if dialog_visible:
+                        logger.warning("  Dialog still open — post may not have been submitted")
+                        page.screenshot(path="debug_facebook_dialog_still_open.png")
+                    else:
+                        logger.info("  Dialog closed — post submitted!")
+                except Exception:
+                    pass
                 logger.info("Post published successfully!")
                 return True
             else:

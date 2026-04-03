@@ -179,6 +179,8 @@ class TwitterPoster:
                     str(self.session_path),
                     headless=False,
                     viewport={"width": 1280, "height": 800},
+                    slow_mo=100,
+                    args=["--disable-blink-features=AutomationControlled"],
                 )
                 page = context.pages[0] if context.pages else context.new_page()
                 page.goto("https://x.com/home", timeout=60000)
@@ -187,9 +189,37 @@ class TwitterPoster:
                 except Exception:
                     pass
 
-                if "login" in page.url or "/i/flow/login" in page.url:
+                # Check if login needed — Twitter shows login popup even on /home
+                needs_login = False
+                try:
+                    page_state = page.evaluate("""
+                        () => {
+                            const text = document.body.innerText?.substring(0, 2000) || '';
+                            const hasSignIn = text.includes('Sign in to X') || text.includes('Sign in with');
+                            const hasComposer = !!document.querySelector('[data-testid="tweetTextarea_0"]');
+                            const hasSideNav = !!document.querySelector('[data-testid="SideNav_NewTweet_Button"]');
+                            return { hasSignIn, hasComposer, hasSideNav, url: window.location.href };
+                        }
+                    """)
+                    logger.info(f"Page state: {page_state}")
+                    if page_state.get("hasSignIn") or (not page_state.get("hasComposer") and not page_state.get("hasSideNav")):
+                        needs_login = True
+                except Exception:
+                    needs_login = True
+
+                if needs_login:
                     logger.info("Please login to Twitter/X in the browser window...")
-                    page.wait_for_url("**/home**", timeout=120000)
+                    logger.info("Waiting up to 2 minutes for login...")
+                    try:
+                        # Wait until composer or sidebar appears (logged in state)
+                        page.wait_for_selector('[data-testid="SideNav_NewTweet_Button"], [data-testid="tweetTextarea_0"]', timeout=120000)
+                        logger.info("Login successful!")
+                        time.sleep(5)
+                    except Exception:
+                        logger.error("Login timeout!")
+                        page.screenshot(path="debug_twitter_login_timeout.png")
+                        context.close()
+                        return
 
                 for filepath in approved_posts:
                     content = self.extract_post_content(filepath)

@@ -53,7 +53,7 @@ personal-ai-employee/
 │   └── Business_Goals.md              # Business objectives & metrics
 │
 ├── .claude/                            # Claude Code config
-│   └── skills/                         # Agent Skills (29 total)
+│   └── skills/                         # Agent Skills (29 total, 21 Python scripts)
 │       │
 │       │  # ── Bronze Tier Skills (8) ──
 │       ├── vault-setup/SKILL.md             # Vault structure creation
@@ -85,7 +85,9 @@ personal-ai-employee/
 │       │   ├── SKILL.md
 │       │   └── scripts/email_mcp_server.py
 │       ├── approval-workflow/SKILL.md       # Human-in-the-loop approvals
-│       ├── process-approved/SKILL.md        # Execute approved actions
+│       ├── process-approved/                 # Execute approved actions
+│       │   ├── SKILL.md
+│       │   └── scripts/process_approved.py  # Watches /Approved/ folder
 │       ├── scheduler/                       # Task scheduling
 │       │   ├── SKILL.md
 │       │   └── scripts/setup_scheduler.py
@@ -95,14 +97,16 @@ personal-ai-employee/
 │       │   ├── SKILL.md
 │       │   └── scripts/whatsapp_reply.py
 │       │
-│       │  # ── Gold Tier Skills (11) ──
+│       │  # ── Gold Tier Skills (12) ──
 │       ├── odoo-integration/                # Odoo ERP accounting
 │       │   ├── SKILL.md
-│       │   └── scripts/odoo_client.py
+│       │   └── scripts/
+│       │       ├── odoo_client.py           # CLI client
+│       │       └── odoo_mcp_server.py       # MCP server (FastMCP)
 │       ├── facebook-post/                   # Facebook auto-posting
 │       │   ├── SKILL.md
 │       │   └── scripts/facebook_poster.py
-│       ├── instagram-post/                  # Instagram auto-posting (mobile)
+│       ├── instagram-post/                  # Instagram auto-posting (desktop)
 │       │   ├── SKILL.md
 │       │   └── scripts/instagram_poster.py
 │       ├── twitter-post/                    # Twitter/X auto-posting
@@ -222,26 +226,46 @@ uv run python .claude/skills/linkedin-post/scripts/linkedin_poster.py --vault ./
 ```
 Uses Playwright bounding-box clicks for reliable automation. Posts are auto-moved to `/Done/` after publishing.
 
-**Facebook / Instagram / Twitter Posting** (Gold):
+**Facebook Posting** (Gold — Tested & Working):
 ```bash
-# Same pattern as LinkedIn — create post in Pending_Approval, approve, then run poster
 uv run python .claude/skills/facebook-post/scripts/facebook_poster.py --vault ./AI_Employee_Vault
+```
+Handles notification dialogs, "Review audience" prompts, and post composer automatically.
+
+**Instagram Posting** (Gold — Tested & Working):
+```bash
 uv run python .claude/skills/instagram-post/scripts/instagram_poster.py --vault ./AI_Employee_Vault
+```
+Uses desktop mode. Supports image upload with caption. Post file needs `image_path:` in frontmatter. First run requires manual login.
+
+**Twitter/X Posting** (Gold):
+```bash
 uv run python .claude/skills/twitter-post/scripts/twitter_poster.py --vault ./AI_Employee_Vault
 ```
 
-### Odoo Integration (Gold)
+### Odoo Integration (Gold — Tested & Working)
 
 ```bash
-# Test connection
+# CLI Client
 uv run python .claude/skills/odoo-integration/scripts/odoo_client.py --action test
-
-# List invoices
 uv run python .claude/skills/odoo-integration/scripts/odoo_client.py --action list_invoices
-
-# Get account balance
 uv run python .claude/skills/odoo-integration/scripts/odoo_client.py --action balance
+
+# MCP Server (for Claude Code integration)
+uv run python .claude/skills/odoo-integration/scripts/odoo_mcp_server.py
 ```
+MCP server exposes 7 tools: `odoo_test_connection`, `odoo_list_invoices`, `odoo_create_invoice`, `odoo_search_partners`, `odoo_get_balance`, `odoo_get_payments`, `odoo_weekly_audit`.
+
+### Process Approved Actions (Gold — Tested & Working)
+
+```bash
+# One-time scan and process all approved files
+uv run python .claude/skills/process-approved/scripts/process_approved.py --vault ./AI_Employee_Vault
+
+# Continuously watch /Approved/ folder (recommended)
+uv run python .claude/skills/process-approved/scripts/process_approved.py --vault ./AI_Employee_Vault --watch --interval 5
+```
+Auto-detects file type (Odoo invoice, social post, email, etc.) and routes to correct executor. Odoo invoices are created automatically, file moved to `/Done/`.
 
 ### Reports & Audits (Gold)
 
@@ -307,20 +331,22 @@ uv run python .claude/skills/scheduler/scripts/setup_scheduler.py --remove
 - [x] Windows Task Scheduler skill + setup script
 - [x] All 4 watchers tested (File, LinkedIn, WhatsApp, Gmail pending credentials)
 
-### Gold Tier — COMPLETE
-- [x] Odoo Community accounting integration skill + script (JSON-RPC)
-- [x] Facebook auto-post skill + script (Playwright-based)
-- [x] Instagram auto-post skill + script (Playwright mobile emulation)
+### Gold Tier — COMPLETE (7/12 Tested & Working)
+- [x] Odoo Community accounting + MCP server (JSON-RPC) — **Tested & Working** (install, connect, invoices, balance, approval workflow)
+- [x] Facebook auto-post skill + script (Playwright) — **Tested & Working**
+- [x] Instagram auto-post skill + script (Playwright desktop, image+caption) — **Tested & Working**
+- [x] WhatsApp Reply skill + script (Playwright) — **Tested & Working**
+- [x] Social media analytics summary skill + script — **Tested & Working**
+- [x] Weekly CEO Briefing skill + script — **Tested & Working**
+- [x] Weekly System Audit skill + script — **Tested & Working**
 - [x] Twitter/X auto-post skill + script (Playwright-based)
-- [x] Social media analytics summary skill + script
-- [x] Weekly CEO Briefing skill + script
-- [x] Weekly System Audit skill + script
 - [x] Error recovery and graceful degradation skill + script (3-level: retry/notify/skip)
 - [x] Comprehensive audit logging skill + script (centralized JSON logger)
 - [x] Ralph Wiggum autonomous loop skill + script (safety guards, priority sorting)
 - [x] Architecture documentation generation skill + script
-- [x] WhatsApp Reply skill + script (send approved replies via Playwright)
-- [x] All 12 Gold tier scripts implemented (19 total Python scripts)
+- [x] Process Approved watcher — auto-executes approved actions (Odoo invoices, etc.)
+- [x] Multiple MCP servers: Email MCP + Odoo MCP (2 servers, 10 tools total)
+- [x] All 12 Gold tier scripts + 21 Python scripts total
 
 ### Platinum Tier — TODO
 - [ ] Full polish and production-ready deployment
@@ -362,7 +388,7 @@ All AI functionality is implemented as Agent Skills at `.claude/skills/`. Each s
 | `create-plan` | Creates Plan.md files for multi-step tasks | Tested |
 | `email-mcp` | MCP server for sending/drafting/searching emails (FastMCP) | Init tested |
 | `approval-workflow` | Creates approval requests in /Pending_Approval/ | **Working** |
-| `process-approved` | Executes approved actions from /Approved/ | Tested |
+| `process-approved` | Watches /Approved/ folder, auto-executes actions (Odoo, etc.) | **Tested & Working** |
 | `scheduler` | Sets up Windows Task Scheduler for automation | Needs admin |
 | `reasoning-loop` | Core AI loop: Read → Think → Plan → Act | Tested |
 
@@ -370,18 +396,18 @@ All AI functionality is implemented as Agent Skills at `.claude/skills/`. Each s
 
 | Skill | Purpose | Status |
 |-------|---------|--------|
-| `odoo-integration` | Odoo ERP accounting via JSON-RPC (invoices, payments) | **Implemented** |
-| `facebook-post` | Auto-posts approved content on Facebook (Playwright) | **Implemented** |
-| `instagram-post` | Auto-posts on Instagram with mobile emulation (Playwright) | **Implemented** |
-| `twitter-post` | Auto-posts tweets on Twitter/X (Playwright) | **Implemented** |
-| `social-summary` | Social media analytics summary across all platforms | **Implemented** |
-| `ceo-briefing` | Weekly CEO briefing with task metrics & financials | **Implemented** |
-| `weekly-audit` | System health audit (stale tasks, errors, watcher status) | **Implemented** |
-| `error-recovery` | Error handling with retry, notify, graceful degradation | **Implemented** |
-| `audit-logger` | Comprehensive audit logging for all actions | **Implemented** |
-| `ralph-wiggum-loop` | Autonomous task completion loop with safety guards | **Implemented** |
-| `whatsapp-reply` | Sends approved WhatsApp replies via Playwright | **Implemented** |
-| `generate-docs` | Generates architecture & setup documentation | **Implemented** |
+| `facebook-post` | Auto-posts approved content on Facebook (Playwright) | **Tested & Working** |
+| `instagram-post` | Auto-posts on Instagram with image + caption (Playwright desktop) | **Tested & Working** |
+| `whatsapp-reply` | Sends approved WhatsApp replies via Playwright | **Tested & Working** |
+| `social-summary` | Social media analytics summary across all platforms | **Tested & Working** |
+| `ceo-briefing` | Weekly CEO briefing with task metrics & financials | **Tested & Working** |
+| `weekly-audit` | System health audit (stale tasks, errors, watcher status) | **Tested & Working** |
+| `twitter-post` | Auto-posts tweets on Twitter/X (Playwright) | Script ready |
+| `odoo-integration` | Odoo ERP accounting via JSON-RPC + MCP server (invoices, payments, audit) | **Tested & Working** |
+| `error-recovery` | Error handling with retry, notify, graceful degradation | Script ready |
+| `audit-logger` | Comprehensive audit logging for all actions | Script ready |
+| `ralph-wiggum-loop` | Autonomous task completion loop with safety guards | Script ready |
+| `generate-docs` | Generates architecture & setup documentation | Script ready |
 
 ## Workflow
 
@@ -406,12 +432,31 @@ All AI functionality is implemented as Agent Skills at `.claude/skills/`. Each s
 
 ## Demo — What Works Today
 
-1. **Drop a file** in `DropFolder/` → File Watcher detects it → Creates action file in `/Needs_Action/`
-2. **LinkedIn Watcher** monitors notifications every 5 minutes → Creates alerts in `/Needs_Action/`
-3. **WhatsApp Watcher** monitors unread messages → Detects new chats → Creates action files in `/Needs_Action/`
-4. **Create a LinkedIn post** → Goes to `/Pending_Approval/` → Human approves → Move to `/Approved/` → **LinkedIn Poster publishes it automatically**
-5. **Approval Workflow** ensures no action happens without human consent
-6. **All actions logged** in `AI_Employee_Vault/Logs/` as JSON
+### Watchers (Perception Layer)
+1. **File Watcher** — Drop a file in `DropFolder/` → Detected → Action file in `/Needs_Action/`
+2. **WhatsApp Watcher** — Monitors unread messages → Detects sender name via DOM walking → Creates action files
+3. **LinkedIn Watcher** — Monitors notifications every 5 minutes → Creates alerts
+
+### Social Media Posting (Action Layer)
+4. **LinkedIn Post** — Create post → Approve in Obsidian → Auto-published via Playwright
+5. **Facebook Post** — Handles notification/review dialogs → Auto-published via Playwright
+6. **Instagram Post** — Image upload + caption → Crop → Filters → Share (desktop mode)
+7. **WhatsApp Reply** — Watcher detects message → AI drafts reply → Human approves → Reply sent
+
+### Reports & Analytics (Intelligence Layer)
+8. **Social Summary** — Cross-platform analytics (posts, engagement, platform breakdown)
+9. **CEO Briefing** — Weekly executive summary (tasks, social media, errors, recommendations)
+10. **Weekly Audit** — System health check (stale tasks, watcher status, vault integrity)
+
+### Accounting (Business Layer)
+11. **Odoo ERP** — Invoice creation via JSON-RPC, account balance, partner search
+12. **Odoo Approval Workflow** — Approve in Obsidian → Watcher detects → Invoice auto-created in Odoo
+13. **Odoo MCP Server** — Claude Code directly interacts with Odoo (7 tools)
+
+### Core Workflow
+14. **Human-in-the-Loop** — ALL sensitive actions require approval via Obsidian
+15. **Audit Logging** — Every action logged in `AI_Employee_Vault/Logs/` as JSON
+16. **Process Approved Watcher** — Auto-detects and executes approved actions
 
 ## Security
 

@@ -1,0 +1,91 @@
+[
+  {
+    "timestamp": "2026-04-03T10:19:01.830513",
+    "action_type": "error",
+    "actor": "error_recovery",
+    "source": "demo_script",
+    "error": "Could not connect to LinkedIn after 3 attempts",
+    "severity": "medium",
+    "result": "logged"
+  },
+  {
+    "timestamp": "2026-04-03T10:19:01.834516",
+    "action_type": "error",
+    "actor": "error_recovery",
+    "source": "TWITTER_POST_test.md",
+    "error": "Rate limited by Twitter API",
+    "severity": "low",
+    "result": "logged"
+  },
+  {
+    "timestamp": "2026-04-03T10:19:58.807003",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "EMAIL_19c89e12f02503f1.md",
+    "action": "routed_to_approval",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:20:03.818937",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "ERROR_demo_script_20260403_101901.md",
+    "action": "auto_processed",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:20:08.888436",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "WHATSAPP_Mahira_Khan.md",
+    "action": "routed_to_approval",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:20:13.929356",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "LINKEDIN_NOTIF_linkedin_notif_-5639658974074638063_20260224.md",
+    "action": "auto_processed",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:20:18.984655",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "LINKEDIN_NOTIF_linkedin_notif_-6585771938374960135_20260224.md",
+    "action": "auto_processed",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:20:24.041573",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "LINKEDIN_NOTIF_linkedin_notif_2413405263666741231_20260224.md",
+    "action": "auto_processed",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:20:29.085618",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "TASK_website_update_20260224.md",
+    "action": "routed_to_approval",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:22:08.819788",
+    "action_type": "ralph_wiggum_loop",
+    "actor": "ralph_wiggum_loop",
+    "file": "TASK_test_ralph.md",
+    "action": "auto_processed",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-04-03T10:33:07.551623",
+    "action_type": "twitter_post",
+    "actor": "twitter_poster",
+    "file": "TWITTER_POST_test_01.md",
+    "result": "failed"
+  }
+]
